@@ -39,3 +39,4 @@ __screenshots__/
 *.timestamp-*-*.mjs
 
 scripts/guests.json
+src/guests.json
