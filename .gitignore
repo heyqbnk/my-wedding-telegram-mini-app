@@ -38,5 +38,5 @@ __screenshots__/
 # Vite
 *.timestamp-*-*.mjs
 
-scripts/guests.json
+scripts/info.json
 src/guests.json
