@@ -1,11 +1,10 @@
 <script setup lang="ts">
+import { boolean, looseObject, optional, parse, parseJson, pipe, string, transform } from 'valibot';
 import { onMounted, ref } from 'vue';
-import { looseObject, parse, parseJson, pipe, string,  } from 'valibot';
-
-import { decryptAES256 } from './utils/decryptAES256';
-import { hexToBuffer } from './utils/hexToBuffer';
 
 import guests from './guests.json' with { type: 'json' };
+import { decryptAES256 } from './utils/decryptAES256';
+import { hexToBuffer } from './utils/hexToBuffer';
 
 const userId = '690143';
 
@@ -13,7 +12,9 @@ const isLoading = ref(true);
 const guest = ref<{
   name: string;
   location: string;
-  time: string;
+  date: Date;
+  plusOne?: boolean;
+  groupChatInviteLink: string;
 }>();
 
 onMounted(async () => {
@@ -30,17 +31,15 @@ onMounted(async () => {
           looseObject({
             name: string(),
             location: string(),
-            time: string(),
-          })
+            date: pipe(string(), transform(v => new Date(v))),
+            plusOne: optional(boolean()),
+            groupChatInviteLink: string(),
+          }),
         ),
-        await decryptAES256(
-          hexToBuffer(data + authTag),
-          hashBuffer,
-          hexToBuffer(iv),
-        )
+        await decryptAES256(hexToBuffer(data + authTag), hashBuffer, hexToBuffer(iv)),
       );
       break;
-    } catch (e) {
+    } catch {
     }
   }
   isLoading.value = false;
@@ -52,7 +51,7 @@ onMounted(async () => {
     <h1>
       {{ guest.name }}
     </h1>
-    {{ guest.location }} / {{ guest.time }}
+    {{ guest.location }} / {{ guest.date }}
   </template>
 </template>
 
